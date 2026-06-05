@@ -42,8 +42,8 @@ export const profile: ProfileConfig = {
     { platform: "x", href: "https://x.com/ploysi123" },
   ],
   track: {
-    title: "now playing",
-    artist: "",
+    title: "i love you slowed reverb",
+    artist: "viw",
     src: "",
     autoplayOnEnter: true,
   },

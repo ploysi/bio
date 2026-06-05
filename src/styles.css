@@ -597,7 +597,7 @@ button {
 .app--profile-ready .profile-card__handle,
 .app--profile-ready h1,
 .app--profile-ready .profile-card__bio,
-.app--profile-ready .status-panel,
+.app--profile-ready .music-menu,
 .app--profile-ready .identity-links,
 .app--profile-ready .profile-card__footer {
   animation: terminal-reveal 560ms steps(5, end) both;
@@ -615,7 +615,7 @@ button {
   animation-delay: 210ms;
 }
 
-.app--profile-ready .status-panel {
+.app--profile-ready .music-menu {
   animation-delay: 290ms;
 }
 
@@ -735,51 +735,80 @@ h1::after {
   text-align: center;
 }
 
-.status-panel {
+.music-menu {
+  position: relative;
   display: grid;
   width: 100%;
   margin: clamp(14px, 2.2vh, 21px) 0 0;
-  padding: 0;
+  min-height: clamp(76px, 9vh, 92px);
+  padding: 16px 18px;
+  overflow: hidden;
   border: 1.5px solid rgba(9, 9, 13, 0.72);
   background:
-    linear-gradient(90deg, rgba(139, 40, 255, 0.1), transparent 62%),
+    radial-gradient(circle at 88% 18%, rgba(32, 214, 255, 0.12), transparent 22%),
+    linear-gradient(90deg, rgba(155, 53, 255, 0.12), transparent 62%),
     rgba(255, 255, 255, 0.34);
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
 }
 
-.status-panel__item {
-  position: relative;
-  display: flex;
-  min-width: 0;
-  padding: 10px 12px 11px;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.status-panel__item + .status-panel__item {
-  border-left: 1.5px solid rgba(9, 9, 13, 0.62);
-}
-
-.status-panel__item::before {
+.music-menu::before {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 5px;
-  height: 5px;
+  top: 12px;
+  right: 13px;
+  width: 8px;
+  height: 8px;
   background: var(--violet);
-  box-shadow: 0 0 8px rgba(139, 40, 255, 0.44);
+  box-shadow:
+    -24px 18px 0 rgba(155, 53, 255, 0.42),
+    -58px 42px 0 rgba(8, 7, 13, 0.2),
+    -9px 58px 0 rgba(255, 63, 143, 0.44);
   content: "";
 }
 
-.status-panel dt,
-.status-panel dd {
+.music-menu::after {
+  position: absolute;
+  right: -18px;
+  bottom: -16px;
+  width: 120px;
+  height: 76px;
+  opacity: 0.2;
+  background-image: radial-gradient(var(--violet) 1.5px, transparent 1.7px);
+  background-size: 10px 10px;
+  content: "";
+}
+
+.music-menu__icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid rgba(8, 7, 13, 0.72);
+  background: var(--violet);
+  box-shadow: 4px 4px 0 rgba(8, 7, 13, 0.12);
+  color: white;
+  font-size: 15px;
+  place-items: center;
+}
+
+.music-menu__copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.music-menu__copy small,
+.music-menu__copy strong {
   overflow: hidden;
-  margin: 0;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.status-panel dt {
+.music-menu__copy small {
   color: rgba(9, 9, 13, 0.52);
   font-size: 8px;
   font-weight: 700;
@@ -787,12 +816,66 @@ h1::after {
   text-transform: uppercase;
 }
 
-.status-panel dd {
+.music-menu__copy strong {
   color: var(--black);
   font-family: "Pixelify Sans", monospace;
-  font-size: 16px;
+  font-size: clamp(18px, 2.6vw, 24px);
   font-weight: 700;
-  line-height: 1;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  text-transform: lowercase;
+}
+
+.music-menu__copy strong span {
+  display: inline-block;
+  min-width: max-content;
+  padding-right: 36px;
+  animation: music-title-marquee 9s linear infinite;
+}
+
+.music-menu__meter {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 35px;
+  gap: 4px;
+  align-items: end;
+}
+
+.music-menu__meter i {
+  display: block;
+  width: 5px;
+  height: 40%;
+  background: var(--black);
+  animation: music-meter 1.05s steps(4, end) infinite;
+}
+
+.music-menu__meter i:nth-child(2n) {
+  background: var(--violet);
+}
+
+.music-menu__meter i:nth-child(1) {
+  animation-delay: -0.2s;
+}
+
+.music-menu__meter i:nth-child(2) {
+  height: 70%;
+  animation-delay: -0.45s;
+}
+
+.music-menu__meter i:nth-child(3) {
+  height: 52%;
+  animation-delay: -0.1s;
+}
+
+.music-menu__meter i:nth-child(4) {
+  height: 92%;
+  animation-delay: -0.65s;
+}
+
+.music-menu__meter i:nth-child(5) {
+  height: 58%;
+  animation-delay: -0.32s;
 }
 
 .identity-links {
@@ -1841,6 +1924,31 @@ h1::after {
   }
 }
 
+@keyframes music-meter {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scaleY(0.45);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1.1);
+  }
+}
+
+@keyframes music-title-marquee {
+  0%,
+  18% {
+    transform: translateX(0);
+  }
+
+  82%,
+  100% {
+    transform: translateX(calc(-100% + min(100%, 250px)));
+  }
+}
+
 @keyframes activity-blink {
   0%,
   100% {
@@ -2049,21 +2157,23 @@ h1::after {
       12px 12px 0 rgba(9, 9, 13, 0.12);
   }
 
-  .status-panel {
-    grid-template-columns: repeat(3, 1fr);
+  .music-menu {
+    min-height: 72px;
+    padding: 13px 14px;
+    gap: 12px;
   }
 
-  .status-panel__item {
-    padding: 8px 10px 9px;
+  .music-menu__icon {
+    width: 34px;
+    height: 34px;
   }
 
-  .status-panel dd {
-    font-size: 14px;
+  .music-menu__copy strong {
+    font-size: 17px;
   }
 
-  .status-panel__item + .status-panel__item {
-    border-top: 0;
-    border-left: 1.5px solid rgba(9, 9, 13, 0.62);
+  .music-menu__meter {
+    display: none;
   }
 
   .identity-links__grid {
@@ -2135,8 +2245,13 @@ h1::after {
     line-height: 1.5;
   }
 
-  .status-panel__item {
-    padding-block: 7px;
+  .music-menu {
+    min-height: 58px;
+    padding-block: 10px;
+  }
+
+  .music-menu__copy strong {
+    font-size: 16px;
   }
 
   .identity-link {

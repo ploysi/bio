@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import type { IconType } from "react-icons";
 import {
   FaEye,
+  FaMusic,
   FaPause,
   FaPlay,
   FaTiktok,
@@ -142,16 +143,30 @@ function ActivityLog() {
   );
 }
 
-function StatusPanel() {
+function MusicMenu() {
   return (
-    <dl className="status-panel" aria-label="Profile status">
-      {profile.status.map(({ label, value }) => (
-        <div className="status-panel__item" key={label}>
-          <dt>{label}</dt>
-          <dd>{value}</dd>
-        </div>
-      ))}
-    </dl>
+    <section className="music-menu" aria-label="Now playing">
+      <span className="music-menu__icon" aria-hidden="true">
+        <FaMusic />
+      </span>
+      <span className="music-menu__copy">
+        <small>now playing</small>
+        <strong>
+          <span>
+            {profile.track.artist
+              ? `${profile.track.artist} - ${profile.track.title}`
+              : profile.track.title}
+          </span>
+        </strong>
+      </span>
+      <span className="music-menu__meter" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+        <i />
+        <i />
+      </span>
+    </section>
   );
 }
 
@@ -312,7 +327,7 @@ function ProfileCard({
       <p className="profile-card__handle">@{profile.name}</p>
       <h1 data-text={profile.name}>{profile.name}</h1>
       <p className="profile-card__bio">{profile.bio}</p>
-      <StatusPanel />
+      <MusicMenu />
       <IdentityLinks onOpen={onSocialOpen} />
       <Player entered={entered} muted={muted} track={profile.track} />
       <div className="profile-card__footer">
