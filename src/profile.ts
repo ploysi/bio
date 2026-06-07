@@ -9,6 +9,8 @@ export type TrackConfig = {
   title: string;
   artist?: string;
   src: string;
+  coverUrl?: string;
+  spotifyUrl?: string;
   autoplayOnEnter: boolean;
 };
 
@@ -42,9 +44,11 @@ export const profile: ProfileConfig = {
     { platform: "x", href: "https://x.com/ploysi123" },
   ],
   track: {
-    title: "i love you slowed reverb",
-    artist: "viw",
-    src: "",
+    title: "i love u. - slowed + reverb",
+    artist: "wiv",
+    src: "./audio/wiv-i-love-u-slowed-reverb.mp3",
+    coverUrl: "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02e57698883e7259c2218dd1f3",
+    spotifyUrl: "https://open.spotify.com/track/1gCpf5jhAqegPJeXG0BCn5",
     autoplayOnEnter: true,
   },
 };

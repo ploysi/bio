@@ -3,13 +3,11 @@ import type { CSSProperties } from "react";
 import type { IconType } from "react-icons";
 import {
   FaEye,
-  FaMusic,
   FaPause,
   FaPlay,
   FaTiktok,
   FaTwitch,
   FaVolumeHigh,
-  FaVolumeXmark,
   FaXTwitter,
   FaYoutube,
 } from "react-icons/fa6";
@@ -24,174 +22,59 @@ const icons: Record<SocialPlatform, IconType> = {
 
 type SocialOpenHandler = (platform: SocialPlatform, href: string) => void;
 
-function IntroWaveform() {
-  return (
-    <span className="intro-waveform" aria-hidden="true">
-      {Array.from({ length: 22 }, (_, index) => (
-        <i key={index} style={{ "--bar-index": index } as CSSProperties} />
-      ))}
-    </span>
-  );
-}
-
 function IntroOverlay({
-  booting,
   leaving,
   onEnter,
 }: {
-  booting: boolean;
   leaving: boolean;
   onEnter: () => void;
 }) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !booting) {
+      if (event.key === "Enter") {
         onEnter();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [booting, onEnter]);
+  }, [onEnter]);
 
   return (
     <button
-      aria-live={booting ? "polite" : undefined}
-      className={`intro ${booting ? "intro--booting" : ""} ${
-        leaving ? "intro--leaving" : ""
-      }`}
+      className={`intro ${leaving ? "intro--leaving" : ""}`}
       onClick={onEnter}
-      disabled={booting}
       type="button"
     >
-      <span className="intro__dot-grid intro__dot-grid--top" />
-      <span className="intro__dot-grid intro__dot-grid--bottom" />
       <span className="intro__system-title" aria-hidden="true">
-        PLOYSI.SYS
+        ploysi.xyz
       </span>
-      <IntroWaveform />
-      {booting ? (
-        <span className="intro__boot">
-          <span>loading ploysi.exe</span>
-          <span>rendering shadow profile</span>
-          <span>syncing particles</span>
-        </span>
-      ) : (
-        <span className="intro__copy">
-          <span className="intro__bracket intro__bracket--left">[</span>
-          <span className="intro__label">click to enter</span>
-          <span className="intro__bracket intro__bracket--right">]</span>
-          <span className="intro__hint">or press enter</span>
-        </span>
-      )}
+      <span className="intro__copy">
+        <span className="intro__bracket intro__bracket--left">[</span>
+        <span className="intro__label">click to enter</span>
+        <span className="intro__bracket intro__bracket--right">]</span>
+        <span className="intro__hint">or press enter</span>
+      </span>
     </button>
-  );
-}
-
-function SignalRail() {
-  return (
-    <aside className="signal-rail" aria-label="Signal identity panel">
-      <span className="signal-rail__label">identity / signal</span>
-      <div className="signal-rail__screen">
-        <span className="signal-rail__readout">PLOYSI.SYS</span>
-        <span className="signal-rail__pulse" aria-hidden="true" />
-        <dl>
-          <div>
-            <dt>access</dt>
-            <dd>public</dd>
-          </div>
-          <div>
-            <dt>node</dt>
-            <dd>online</dd>
-          </div>
-          <div>
-            <dt>signal</dt>
-            <dd>1337</dd>
-          </div>
-        </dl>
-      </div>
-    </aside>
-  );
-}
-
-function ActivityLog() {
-  return (
-    <aside className="activity-log" aria-label="Activity log panel">
-      <span className="activity-log__label">activity / live</span>
-      <div className="activity-log__screen">
-        <span className="activity-log__title">LIVE.LOG</span>
-        <ol>
-          <li>
-            <span>00:13</span>
-            <strong>profile rendered</strong>
-          </li>
-          <li>
-            <span>00:18</span>
-            <strong>links armed</strong>
-          </li>
-          <li>
-            <span>00:21</span>
-            <strong>signal clean</strong>
-          </li>
-          <li>
-            <span>now</span>
-            <strong>watching</strong>
-          </li>
-        </ol>
-      </div>
-    </aside>
-  );
-}
-
-function MusicMenu() {
-  return (
-    <section className="music-menu" aria-label="Now playing">
-      <span className="music-menu__icon" aria-hidden="true">
-        <FaMusic />
-      </span>
-      <span className="music-menu__copy">
-        <small>now playing</small>
-        <strong>
-          <span>
-            {profile.track.artist
-              ? `${profile.track.artist} - ${profile.track.title}`
-              : profile.track.title}
-          </span>
-        </strong>
-      </span>
-      <span className="music-menu__meter" aria-hidden="true">
-        <i />
-        <i />
-        <i />
-        <i />
-        <i />
-      </span>
-    </section>
   );
 }
 
 function IdentityLinks({ onOpen }: { onOpen: SocialOpenHandler }) {
   return (
     <nav className="identity-links" aria-label="Links and identity">
-      <span className="identity-links__title">links / identity</span>
       <div className="identity-links__grid">
         {profile.socials.map(({ platform, href }, index) => {
           const Icon = icons[platform];
+          const label = `${platform} ${String(index + 1).padStart(2, "0")}`;
 
           if (!href) {
             return (
               <span
-                aria-disabled="true"
+                aria-label={`${label} not linked`}
                 className="identity-link identity-link--disabled"
                 key={platform}
+                role="img"
               >
-                <span className="identity-link__index">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="identity-link__copy">
-                  <strong>{platform}</strong>
-                  <small>not linked</small>
-                </span>
                 <Icon aria-hidden="true" />
               </span>
             );
@@ -209,14 +92,8 @@ function IdentityLinks({ onOpen }: { onOpen: SocialOpenHandler }) {
               }}
               rel="noreferrer"
               target="_blank"
+              title={platform}
             >
-              <span className="identity-link__index">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="identity-link__copy">
-                <strong>{platform}</strong>
-                <small>open channel</small>
-              </span>
               <Icon aria-hidden="true" />
             </a>
           );
@@ -226,17 +103,18 @@ function IdentityLinks({ onOpen }: { onOpen: SocialOpenHandler }) {
   );
 }
 
-function Player({
+function MusicPlayer({
   entered,
-  muted,
   track,
 }: {
   entered: boolean;
-  muted: boolean;
   track: TrackConfig;
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(0.72);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -248,8 +126,19 @@ function Player({
     void audio.play().catch(() => setIsPlaying(false));
   }, [entered, track.autoplayOnEnter]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
   if (!track.src) {
-    return null;
+    return (
+      <section className="music-player music-player--empty" aria-label="Music player">
+        <span className="music-player__label">now playing</span>
+        <strong>no track selected</strong>
+      </section>
+    );
   }
 
   const togglePlayback = () => {
@@ -265,48 +154,97 @@ function Player({
       audio.pause();
     }
   };
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const trackLabel = track.artist ? `${track.artist} - ${track.title}` : track.title;
+  const formatTime = (time: number) => {
+    if (!Number.isFinite(time) || time <= 0) {
+      return "0:00";
+    }
+
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, "0");
+
+    return `${minutes}:${seconds}`;
+  };
 
   return (
-    <div className="player">
+    <section
+      className={`music-player ${isPlaying ? "music-player--playing" : ""}`}
+      aria-label="Music player"
+    >
       <audio
-        muted={muted}
+        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
+        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
         preload="metadata"
         ref={audioRef}
         src={track.src}
       />
+      {track.coverUrl ? (
+        <img
+          alt=""
+          className="music-player__cover"
+          draggable="false"
+          src={track.coverUrl}
+        />
+      ) : (
+        <span className="music-player__cover" aria-hidden="true" />
+      )}
       <button
         aria-label={isPlaying ? "Pause track" : "Play track"}
-        className="player__toggle"
+        className="music-player__toggle"
         onClick={togglePlayback}
         type="button"
       >
         {isPlaying ? <FaPause /> : <FaPlay />}
       </button>
-      <span className="player__bars" aria-hidden="true">
+      <span className="music-player__copy">
+        <small className="music-player__label">now playing</small>
+        {track.spotifyUrl ? (
+          <a href={track.spotifyUrl} rel="noreferrer" target="_blank">
+            {trackLabel}
+          </a>
+        ) : (
+          <strong>{trackLabel}</strong>
+        )}
+        <span className="music-player__progress" aria-hidden="true">
+          <span style={{ width: `${progress}%` }} />
+        </span>
+        <span className="music-player__time" aria-hidden="true">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </span>
+      </span>
+      <span className="music-player__meter" aria-hidden="true">
         <i />
         <i />
         <i />
       </span>
-      <span className="player__details">
-        <strong>{track.title}</strong>
-        {track.artist && <small>{track.artist}</small>}
-      </span>
-      <FaVolumeHigh className="player__volume" aria-hidden="true" />
-    </div>
+      <label className="music-player__volume" aria-label="Volume">
+        <FaVolumeHigh aria-hidden="true" />
+        <input
+          aria-label="Volume"
+          max="1"
+          min="0"
+          onChange={(event) => setVolume(Number(event.currentTarget.value))}
+          onInput={(event) => setVolume(Number(event.currentTarget.value))}
+          step="0.01"
+          type="range"
+          value={volume}
+        />
+      </label>
+    </section>
   );
 }
 
 function ProfileCard({
-  entered,
-  muted,
   onSocialOpen,
   onPointerMove,
   onPointerLeave,
 }: {
-  entered: boolean;
-  muted: boolean;
   onSocialOpen: SocialOpenHandler;
   onPointerMove: (event: React.PointerEvent<HTMLElement>) => void;
   onPointerLeave: () => void;
@@ -318,21 +256,14 @@ function ProfileCard({
       onPointerLeave={onPointerLeave}
       onPointerMove={onPointerMove}
     >
-      <span className="card-corner card-corner--top" aria-hidden="true" />
-      <span className="card-corner card-corner--bottom" aria-hidden="true" />
-      <span className="profile-card__mark" aria-hidden="true">
-        P
-      </span>
-
-      <p className="profile-card__handle">@{profile.name}</p>
       <h1 data-text={profile.name}>{profile.name}</h1>
-      <p className="profile-card__bio">{profile.bio}</p>
-      <MusicMenu />
       <IdentityLinks onOpen={onSocialOpen} />
-      <Player entered={entered} muted={muted} track={profile.track} />
       <div className="profile-card__footer">
-        <span className="footer-mark">PLOYSI.SYS / ACTIVE</span>
-        <span className="views">
+        <span className="footer-mark">
+          active
+          <span aria-hidden="true">·</span>
+        </span>
+        <span className="views" aria-label={profile.views}>
           <FaEye aria-hidden="true" />
           {profile.views}
         </span>
@@ -341,33 +272,17 @@ function ProfileCard({
   );
 }
 
-function CrtTransition({ platform }: { platform: SocialPlatform | null }) {
-  if (!platform) {
-    return null;
-  }
-
-  return (
-    <div className="crt-transition" aria-live="polite" aria-label="Opening link">
-      <span>opening {platform}...</span>
-    </div>
-  );
-}
-
 function Backdrop() {
+  const particles = Array.from({ length: 42 }, (_, index) => index);
+
   return (
     <div className="backdrop" aria-hidden="true">
-      <span className="rail rail--left" />
-      <span className="rail rail--right" />
-      <span className="halftone halftone--one" />
-      <span className="halftone halftone--two" />
-      <span className="halftone halftone--three" />
-      <span className="pixel-spray pixel-spray--one" />
-      <span className="pixel-spray pixel-spray--two" />
-      <span className="backdrop__word">PLOYSI</span>
-      <span className="backdrop__system backdrop__system--sys">SYS</span>
-      <span className="backdrop__system backdrop__system--online">ONLINE</span>
-      <span className="backdrop__system backdrop__system--node">NODE 07</span>
-      <span className="backdrop__index">01 / WEB PROFILE</span>
+      <span className="backdrop__glow" />
+      <span className="backdrop-particles">
+        {particles.map((particle) => (
+          <i key={particle} />
+        ))}
+      </span>
     </div>
   );
 }
@@ -380,8 +295,10 @@ function CursorTrail() {
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
-      const point = { id: nextId.current++, x: event.clientX, y: event.clientY };
-      setPoints((current) => [...current.slice(-8), point]);
+      setPoints((current) => [
+        ...current.slice(-9),
+        { id: nextId.current++, x: event.clientX, y: event.clientY },
+      ]);
     };
 
     window.addEventListener("pointermove", handlePointerMove);
@@ -406,69 +323,41 @@ function CursorTrail() {
   );
 }
 
+function SocialFlash({ platform }: { platform: SocialPlatform | null }) {
+  if (!platform) {
+    return null;
+  }
+
+  return (
+    <div className="social-flash" aria-live="polite">
+      <span>opening {platform}</span>
+    </div>
+  );
+}
+
 export function App() {
   const [entered, setEntered] = useState(false);
-  const [booting, setBooting] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
-  const [muted, setMuted] = useState(false);
-  const [crtPlatform, setCrtPlatform] = useState<SocialPlatform | null>(null);
+  const [socialFlash, setSocialFlash] = useState<SocialPlatform | null>(null);
   const appRef = useRef<HTMLDivElement>(null);
-  const crtTimeoutRef = useRef<number | undefined>(undefined);
-  const hasAudio = Boolean(profile.track.src);
-  const playEnterSound = useCallback(() => {
-    const AudioContextClass =
-      window.AudioContext ||
-      (
-        window as typeof window & {
-          webkitAudioContext?: typeof AudioContext;
-        }
-      ).webkitAudioContext;
-
-    if (!AudioContextClass) {
-      return;
-    }
-
-    const context = new AudioContextClass();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-
-    oscillator.type = "square";
-    oscillator.frequency.setValueAtTime(170, context.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(
-      88,
-      context.currentTime + 0.08,
-    );
-    gain.gain.setValueAtTime(0.028, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.1);
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start();
-    oscillator.stop(context.currentTime + 0.1);
-    oscillator.addEventListener("ended", () => void context.close());
-  }, []);
+  const socialFlashTimeoutRef = useRef<number | undefined>(undefined);
   const enterProfile = useCallback(() => {
     if (entered) {
       return;
     }
 
     setEntered(true);
-    setBooting(true);
-    playEnterSound();
-  }, [entered, playEnterSound]);
+  }, [entered]);
   const handleSocialOpen = useCallback(
     (platform: SocialPlatform, href: string) => {
-      window.clearTimeout(crtTimeoutRef.current);
-      playEnterSound();
-      setCrtPlatform(null);
-
+      window.clearTimeout(socialFlashTimeoutRef.current);
       const openedWindow = window.open("about:blank", "_blank");
 
-      window.requestAnimationFrame(() => {
-        setCrtPlatform(platform);
-      });
+      setSocialFlash(null);
+      window.requestAnimationFrame(() => setSocialFlash(platform));
 
-      crtTimeoutRef.current = window.setTimeout(() => {
-        setCrtPlatform(null);
+      socialFlashTimeoutRef.current = window.setTimeout(() => {
+        setSocialFlash(null);
 
         if (openedWindow) {
           try {
@@ -481,37 +370,14 @@ export function App() {
         }
 
         window.open(href, "_blank", "noreferrer");
-      }, 460);
+      }, 360);
     },
-    [playEnterSound],
+    [],
   );
-
-  useEffect(() => {
-    const handleInteractiveClick = (event: MouseEvent) => {
-      const target = event.target;
-
-      if (!(target instanceof Element) || !target.closest("a, button")) {
-        return;
-      }
-
-      if (target.closest(".intro")) {
-        return;
-      }
-
-      if (target.closest(".identity-link")) {
-        return;
-      }
-
-      playEnterSound();
-    };
-
-    document.addEventListener("click", handleInteractiveClick);
-    return () => document.removeEventListener("click", handleInteractiveClick);
-  }, [playEnterSound]);
 
   useEffect(
     () => () => {
-      window.clearTimeout(crtTimeoutRef.current);
+      window.clearTimeout(socialFlashTimeoutRef.current);
     },
     [],
   );
@@ -529,8 +395,6 @@ export function App() {
         "--parallax-y",
         String(gazeY),
       );
-      appRef.current?.style.setProperty("--gaze-x", String(gazeX));
-      appRef.current?.style.setProperty("--gaze-y", String(gazeY));
     };
 
     window.addEventListener("pointermove", handlePointerMove);
@@ -562,29 +426,18 @@ export function App() {
       return;
     }
 
-    const timeout = window.setTimeout(() => setBooting(false), 1280);
-    return () => window.clearTimeout(timeout);
-  }, [entered]);
-
-  useEffect(() => {
-    if (!entered || booting) {
-      return;
-    }
-
     const timeout = window.setTimeout(() => setShowIntro(false), 620);
     return () => window.clearTimeout(timeout);
-  }, [booting, entered]);
+  }, [entered]);
 
   return (
     <div
       className={`app ${entered ? "app--entered" : ""} ${
-        entered && !booting ? "app--profile-ready" : ""
-      } ${booting ? "app--booting" : ""}`}
+        entered ? "app--profile-ready" : ""
+      }`}
       ref={appRef}
       style={
         {
-          "--gaze-x": 0,
-          "--gaze-y": 0,
           "--parallax-x": 0,
           "--parallax-y": 0,
         } as CSSProperties
@@ -593,32 +446,17 @@ export function App() {
       <CursorTrail />
       <Backdrop />
       <section className="profile-stage">
-        <SignalRail />
         <ProfileCard
-          entered={entered}
-          muted={muted}
           onSocialOpen={handleSocialOpen}
           onPointerLeave={resetCardTilt}
           onPointerMove={handleCardPointerMove}
         />
-        <ActivityLog />
       </section>
-      <CrtTransition platform={crtPlatform} />
-      <button
-        aria-label={
-          hasAudio ? (muted ? "Unmute audio" : "Mute audio") : "Audio unavailable"
-        }
-        className="mute-toggle"
-        disabled={!hasAudio}
-        onClick={() => setMuted((current) => !current)}
-        type="button"
-      >
-        {muted || !hasAudio ? <FaVolumeXmark /> : <FaVolumeHigh />}
-      </button>
+      <MusicPlayer entered={entered} track={profile.track} />
+      <SocialFlash platform={socialFlash} />
       {showIntro && (
         <IntroOverlay
-          booting={booting}
-          leaving={entered && !booting}
+          leaving={entered}
           onEnter={enterProfile}
         />
       )}
